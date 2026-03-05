@@ -1,0 +1,379 @@
+export interface Experience {
+  company: string;
+  role: string;
+  period: string;
+  description: string[];
+  url?: string;
+}
+
+export interface Education {
+  school: string;
+  degree: string;
+  period: string;
+  description?: string;
+  url?: string;
+}
+
+export interface Project {
+  title: string;
+  description: string;
+  link?: string;
+  tags: string[];
+}
+
+export interface Publication {
+  authors: string;
+  title: string;
+  journal: string;
+  year: string;
+  link?: string;
+  doi?: string;
+  impactFactor?: string;
+}
+
+export interface Award {
+  year: string;
+  title: string;
+  details: string;
+}
+
+export interface Leadership {
+  period: string;
+  organization: string;
+  role: string;
+  logo?: string;
+  description?: string;
+}
+
+export interface EventCoordination {
+  role: string;
+  event: string;
+  year: string;
+}
+
+export interface Workshop {
+  title: string;
+  provider: string;
+  year: string;
+  certificateUrl?: string;
+}
+
+export interface Teaching {
+  role: string;
+  details: string;
+  links?: { label: string; url: string }[];
+}
+
+export interface BlogPost {
+  title: string;
+  category: 'Research Journey' | 'PhD Applications' | 'Nanotechnology' | 'Energy Storage' | 'Study & Discipline';
+  date: string;
+  excerpt: string;
+  imageUrl?: string;
+  content?: string;
+}
+
+export interface Supervisor {
+  name: string;
+  role: string;
+  institution: string;
+  profiles: { label: string; url: string }[];
+}
+
+export interface YouTubeVideo {
+  title: string;
+  id: string;
+  views: string;
+  date: string;
+}
+
+export interface CVData {
+  name: string;
+  title: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  orcid?: string;
+  profiles: { label: string; url: string }[];
+  summary: string;
+  researchInterests: string[];
+  education: Education[];
+  experiences: Experience[];
+  publications: Publication[];
+  workingPapers: string[];
+  conferences: string[];
+  leadership: Leadership[];
+  eventCoordination: EventCoordination[];
+  volunteering: string[];
+  awards: Award[];
+  workshops: Workshop[];
+  skills: {
+    instrumental: string[];
+    software: string[];
+    office: string[];
+    statistical: string[];
+    graphics: string[];
+    languages: string[];
+  };
+  teaching: Teaching[];
+  gallery: { url: string; caption: string; category: string }[];
+  blogPosts: BlogPost[];
+  youtubeVideos: YouTubeVideo[];
+}
+
+export const initialCVData: CVData = {
+  name: "Mahmud Shareef",
+  title: "Researcher in Physical Chemistry & Nanotechnology",
+  email: "shareef.mahmud10@gmail.com",
+  phone: "(+880) 1904966485",
+  location: "Chattogram, Bangladesh",
+  orcid: "0009-0005-5913-6978",
+  profiles: [
+    { label: "LinkedIn", url: "https://linkedin.com/in/mahmudshareef" },
+    { label: "Google Scholar", url: "https://scholar.google.com/citations?user=XXXX" },
+    { label: "ResearchGate", url: "https://researchgate.net/profile/Mahmud_Shareef" },
+    { label: "YouTube", url: "https://www.youtube.com/@mahmudshareef9386" }
+  ],
+  summary: "Dedicated researcher specializing in Nanomaterials, Environmental Remediation, and Energy Conversion. With a strong foundation in Physical Chemistry from the University of Chittagong, my work focuses on synthesizing and characterizing innovative nanostructures to address pressing global challenges in sustainable technology. I am passionate about bridging the gap between fundamental science and practical applications, particularly in electrocatalysis and energy storage systems. Beyond the lab, I am committed to academic leadership and community engagement, striving to foster a collaborative research environment and inspire the next generation of scientists.",
+  researchInterests: [
+    "Nanomaterials",
+    "Environmental Remediation",
+    "Electro/ Photocatalysis",
+    "Energy Conversion and Storage",
+    "Solar Cells"
+  ],
+  education: [
+    {
+      school: "University of Chittagong (CU), Chattogram- 4331, Bangladesh",
+      degree: "Master of Science (MS) in Physical Chemistry (36 Credits)",
+      period: "2025",
+      description: "GPA: 3.98/4.00 (2nd position out of 42). Thesis: 'Synthesis and characterization of Zinc oxide hollow nanostructures from Turnbull blue analogues for dye degradation, antifungal, and antibacterial activity'. Supervisor: [Dr. Faisal Islam Chowdhury](https://scholar.google.com/citations?user=XXXX). Utilized XRD, UV-Vis, SEM, BET, Zeta Potential, DLS, TEM, EDX, and FTIR for analysis.",
+      url: "https://cu.ac.bd"
+    },
+    {
+      school: "University of Chittagong (CU), Chattogram- 4331, Bangladesh",
+      degree: "B.Sc. (Hons) in Chemistry (160 Credits)",
+      period: "2023",
+      description: "CGPA: 3.78/4.00 (3rd position out of 110).",
+      url: "https://cu.ac.bd"
+    }
+  ],
+  experiences: [
+    {
+      company: "Nanotechnology, Renewable Energy & Catalysis Laboratory (NRCL)",
+      role: "Research Assistant and Mentor",
+      period: "Current (Oct 2025)",
+      description: [
+        "Project: Synthesis and Characterization of Core-Shell Bi-Bi2O3/MWCNT and Zn-ZnO/MWCNT Nanocomposites via a Cost-Effective Hydrothermal Method.",
+        "Mentoring current students.",
+        "Advisors: [Prof. Dr. Faisal Islam Chowdhury](https://scholar.google.com/citations?user=XXXX) & [Prof. Dr. Jamal Uddin](https://scholar.google.com/citations?user=YYYY)."
+      ],
+      url: "https://cu.ac.bd/nrcl"
+    },
+    {
+      company: "Nanotechnology, Renewable Energy & Catalysis Laboratory (NRCL)",
+      role: "Research Assistant and Lab Manager",
+      period: "Jan 2024 - Sep 2025",
+      description: [
+        "Project: Synthesis and Characterization of ZIF-67 and Fe (III)-Doped ZIF-67 Nanoparticles for Heavy Metal Removal.",
+        "Conducted MS Thesis on ZnO hollow nanostructures.",
+        "Utilized XRD, UV-Vis, SEM, TEM, EDX, and FTIR for analysis."
+      ],
+      url: "https://cu.ac.bd/nrcl"
+    },
+    {
+      company: "Centre for Ionics, University of Malaya, Malaysia",
+      role: "Visiting Researcher",
+      period: "June 2024",
+      description: [
+        "Project: Fabrication of PVA-NaCMC-PEG Based Polymer Electrolytes Incorporated with Al2O3 Nanofillers and NaCl for Enhanced Ionic Conductivity in Dye-Sensitized Solar Cells (DSSC).",
+        "Conducted EIS and LSV analysis.",
+        "Supervisor: [Dr. Woo Haw Jiunn](https://researchgate.net/profile/Woo_Haw_Jiunn)"
+      ],
+      url: "https://um.edu.my"
+    }
+  ],
+  publications: [
+    {
+      authors: "Islam J., Shareef M., Anwar R., et al.",
+      title: "A Brief Insight on Electrochemical Energy Storage Toward the Production of Value-added Chemicals and Electricity Generation",
+      journal: "Journal of Energy Storage",
+      year: "2024",
+      impactFactor: "9.8",
+      link: "https://doi.org/10.1016/j.est.2024.111111",
+      doi: "10.1016/j.est.2024.111111"
+    },
+    {
+      authors: "Islam, J., Anwar, R., Shareef, M., et al.",
+      title: "Rechargeable metal-metal alkaline batteries: Recent advances, current issues, and future research strategies",
+      journal: "Journal of Power Sources",
+      year: "2023",
+      impactFactor: "7.9",
+      link: "https://doi.org/10.1016/j.jpowsour.2023.222222",
+      doi: "10.1016/j.jpowsour.2023.222222"
+    },
+    {
+      authors: "Islam, J., Shareef, M., et al.",
+      title: "Electrochemical nitrogen fixation in metal-N2 batteries: A paradigm for simultaneous NH3 synthesis and energy generation",
+      journal: "Energy Storage Materials",
+      year: "2022",
+      impactFactor: "20.2",
+      link: "https://doi.org/10.1016/j.ensm.2022.333333",
+      doi: "10.1016/j.ensm.2022.333333"
+    },
+    {
+      authors: "Islam J., Shareef M., et al.",
+      title: "Rechargeable metal-SO2 batteries: Recent progress, current challenges and future prospects",
+      journal: "Journal of Energy Storage",
+      year: "2022",
+      impactFactor: "9.8",
+      link: "https://doi.org/10.1016/j.est.2022.444444",
+      doi: "10.1016/j.est.2022.444444"
+    }
+  ],
+  workingPapers: [
+    "Synthesis and characterization of Zinc oxide hollow nanostructures from Turnbull blue analogues for dye degradation, antifungal, and antibacterial activity"
+  ],
+  conferences: [
+    "Shareef, M., et al. 'Facile and novel synthesis of ZnO hollow nanostructures...' 1st International Conference on International Sustainable and Greener Earth (ICESGE-2025), ACS Bangladesh Youth Summit, 2025.",
+    "Shareef, M., et al. 'Facile and novel synthesis of ZnO hollow nanostructures...' 1st Intl. Conference on Science and Humanities for Sustainable Development (ICSHSD-2025), DUET, Bangladesh, 2025.",
+    "Chowdhury, F.I., ..., Shareef, M., et al. 'Preparation and characterization of polymer-based electrolytes...' 18th Intl. Symposium on Polymer Electrolyte (ISPE-18), Malaysia, 2024.",
+    "Hossain, J., Shareef, M., et al. 'Pathogenic bacteria in food packaging paper...' 1st Jamal Nazrul Islam National Conference 2022 for Young Researchers, University of Chittagong."
+  ],
+  leadership: [
+    {
+      period: "Feb 2019 - Sep 2024",
+      organization: "Chittagong University Research and Higher Study Society (CURHS)",
+      role: "President (Jan 2023–Sep 2024), General Secretary (Jan 2022–Jan 2023), Founding Member (Feb 2019)",
+      logo: "https://picsum.photos/seed/curhs/100/100",
+      description: "A premier research organization dedicated to fostering a research culture among students."
+    },
+    {
+      period: "Jun 2023 - Oct 2024",
+      organization: "American Chemical Society (ACS) Student Chapter, CU",
+      role: "Founding Vice President (Initiated and led the establishment of the chapter)",
+      logo: "https://picsum.photos/seed/acs/100/100",
+      description: "The official student chapter of the American Chemical Society at the University of Chittagong."
+    },
+    {
+      period: "Feb 2023 - May 2025",
+      organization: "Shariatpur Zilla Students' Association",
+      role: "Vice President",
+      logo: "https://picsum.photos/seed/szsa/100/100",
+      description: "A community organization supporting students from Shariatpur district."
+    },
+    {
+      period: "Jan 2022 - Oct 2024",
+      organization: "Chittagong University Cyclists",
+      role: "Founding Member and Vice President",
+      logo: "https://picsum.photos/seed/cuc/100/100",
+      description: "Promoting health and sustainable transportation through cycling."
+    },
+    {
+      period: "Jul 2021 - Jul 2022",
+      organization: "Chittagong University Toastmasters Club (International)",
+      role: "Chartered Member and Vice President (Membership)",
+      logo: "https://picsum.photos/seed/toastmasters/100/100",
+      description: "Developing public speaking and leadership skills through the Toastmasters program."
+    }
+  ],
+  eventCoordination: [
+    { role: "Event Director", event: "TEDxChittagong University", year: "2024" },
+    { role: "Student Organizer", event: "1st International Symposium on Materials, Energy, and Environment (ISMEE-24), University of Chittagong", year: "2024" },
+    { role: "Chief of Operations", event: "Chattogram Research Festival", year: "2023" },
+    { role: "Chief of Event Management", event: "1st Jamal Nazrul Islam National Conference for Young Researchers", year: "2022" },
+    { role: "Project Coordinator", event: "CURHS Research Month", year: "2022" },
+    { role: "Team Leader", event: "CURHS Autumn Internship Program", year: "2020" },
+    { role: "Team Coordinator", event: "CURHS Rising Researchers Contest 1.0", year: "2020" }
+  ],
+  volunteering: [
+    "Volunteer, Flood Rescue and Aid Collection & Distribution Team, Feni, Bangladesh (2024)",
+    "Cricket Player, Trefoil-54 Cricket Team, Dept. of Chemistry, CU (4-time Champions, 2019–2024)"
+  ],
+  awards: [
+    { year: "2026", title: "Deans Award (Expected)", details: "Awarded by the Dean, Faculty of Science, University of Chittagong, for securing a Top-3 position in the BSc (Hons) program – Department of Chemistry." },
+    { year: "2025", title: "Oral Presentation Champion", details: "1st International Conference on International Sustainable and Greener Earth (ICESGE-2025), ACS Bangladesh Youth Summit." },
+    { year: "2025", title: "NST Fellowship", details: "National Science and Technology Fellowship, Ministry of Science and Technology, Bangladesh." },
+    { year: "2025", title: "Highest Impact Publication Award", details: "Chattogram Research & Innovation Festival 2025 (Team Award)" },
+    { year: "2025", title: "UGC Merit Scholarship", details: "Awarded by University Grants Commission, Bangladesh for Outstanding B.Sc. result" },
+    { year: "2024", title: "ACS Travel Grant Award", details: "American Chemical Society student communities professional meeting grant" },
+    { year: "2022", title: "Bicycle Expedition", details: "1000 km Cross-country bicycle ride completion (Tetulia to Teknaf, Bangladesh)" },
+    { year: "2020", title: "Nazim Uddin Scholarship", details: "Awarded by Dept. of Chemistry, CU for outstanding B.Sc. (1st Year) result" },
+    { year: "2016", title: "SSC Board Scholarship", details: "Scholarship awarded by the Education Board, Bangladesh" },
+    { year: "2015", title: "Runner-Up (IGen)", details: "National Internet-based competition by Grameenphone-Prothom Alo (Barisal Zone, Bangladesh)" }
+  ],
+  workshops: [
+    { 
+      title: "Molecular dynamics (MD) simulation", 
+      provider: "The Red-Green Research Centre", 
+      year: "2020",
+      certificateUrl: "https://picsum.photos/seed/cert1/800/600"
+    },
+    { 
+      title: "Fundamentals of Graphic Design", 
+      provider: "Coursera", 
+      year: "2020",
+      certificateUrl: "https://picsum.photos/seed/cert2/800/600"
+    },
+    { 
+      title: "Data Analysis with SPSS", 
+      provider: "Bohubrihi", 
+      year: "2020" 
+    },
+    { 
+      title: "AI For Everyone", 
+      provider: "Coursera", 
+      year: "2020" 
+    }
+  ],
+  skills: {
+    instrumental: ["Fourier Infrared Transform Spectroscopy (FTIR)", "UV-visible spectroscopy", "Rotary Evaporator", "Electrochemical impedance spectroscopy (EIS)"],
+    software: ["Materials Studio", "Gaussian", "PyMOL", "PyRx", "Discovery Studio", "ChemDraw", "Avogadro", "AutoDock Vina", "Swiss-PDB Viewer", "Yasara", "Image-J"],
+    office: ["MS PowerPoint", "MS Word", "MS Excel", "OriginPro"],
+    statistical: ["SPSS", "Python (Basic)", "HTML", "JavaScript"],
+    graphics: ["Adobe Illustrator", "Adobe Photoshop", "Canva", "Adobe Premiere Pro (Basic)", "InShot"],
+    languages: ["Bengali (Native)", "English (Fluent)"]
+  },
+  teaching: [
+    { role: "Private Tutor", details: "Tutored Chemistry to SSC and HSC students." },
+    { role: "Undergrad Tutor", details: "Mentored and tutored B.Sc. students (online and offline) in Nanotechnology, Organic Chemistry, Quantitative Analysis, Hybridization, Molecular Symmetry, and Spectroscopy." },
+    { role: "Training Instructor", details: "Taught Excel, PowerPoint, Graphic Design, OriginPro, and ChemDraw. Conducted Leadership and Teamwork workshops for CURHS and ACS Student Chapter, CU members." }
+  ],
+  gallery: [
+    { url: "https://picsum.photos/seed/sunrise/1200/800", caption: "Campus Sunrise - Award Winning", category: "Campus Sunrise" },
+    { url: "https://picsum.photos/seed/nature/1200/800", caption: "Nature Photography", category: "Nature" },
+    { url: "https://picsum.photos/seed/conference/1200/800", caption: "Oral Presentation at ICESGE-2025", category: "Conference" },
+    { url: "https://picsum.photos/seed/lab/1200/800", caption: "Advanced Nanotechnology Lab Research", category: "Lab" },
+    { url: "https://picsum.photos/seed/cycling/1200/800", caption: "1000km Cross-country Bicycle Expedition", category: "Cycling" }
+  ],
+  blogPosts: [
+    {
+      title: "My Research Journey: From Curiosity to Nanotechnology",
+      category: "Research Journey",
+      date: "Oct 2025",
+      excerpt: "Reflecting on the early days of my academic career and how I found my passion for nanomaterials.",
+      imageUrl: "https://picsum.photos/seed/blog1/800/400",
+      content: "Full content of the research journey blog post goes here. It details the challenges and triumphs of starting in a new field and the excitement of discovering nanotechnology."
+    },
+    {
+      title: "Navigating the PhD Application Process: A Guide for Researchers",
+      category: "PhD Applications",
+      date: "Sep 2025",
+      excerpt: "Sharing my personal experience and tips for applying to top-tier PhD programs globally.",
+      imageUrl: "https://picsum.photos/seed/blog2/800/400",
+      content: "Detailed guide on PhD applications, including preparing a research proposal, contacting supervisors, and acing the interview."
+    },
+    {
+      title: "Nanotechnology Explained: Small Science, Big Impact",
+      category: "Nanotechnology",
+      date: "Aug 2025",
+      excerpt: "A simplified look at how nanotechnology is revolutionizing our world, from medicine to electronics.",
+      imageUrl: "https://picsum.photos/seed/blog3/800/400",
+      content: "An overview of nanotechnology applications in various sectors and why it is considered the future of science."
+    }
+  ],
+  youtubeVideos: [
+    { "title": "Nanotechnology: The Future of Science", "id": "dQw4w9WgXcQ", "views": "1.2K", "date": "2 months ago" },
+    { "title": "My PhD Journey & Application Tips", "id": "dQw4w9WgXcQ", "views": "850", "date": "3 months ago" }
+  ]
+};
