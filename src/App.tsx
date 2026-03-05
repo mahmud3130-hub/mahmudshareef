@@ -123,6 +123,29 @@ export default function App() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onUploadSuccess: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        onUploadSuccess(data.url);
+      } else {
+        alert('Upload failed');
+      }
+    } catch (err) {
+      alert('Error uploading file');
+    }
+  };
+
   const tabs = [
     { id: 'home', label: 'Home' },
     { id: 'research', label: 'Research' },
@@ -274,9 +297,9 @@ export default function App() {
         </AnimatePresence>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 pt-32 md:pt-40 pb-32 space-y-24 md:space-y-48">
+      <main className="max-w-6xl mx-auto px-6 pt-24 md:pt-40 pb-20 space-y-16 md:space-y-32">
         {/* Home Section */}
-        <div id="home" className="space-y-16 md:space-y-32 scroll-mt-40">
+        <div id="home" className="space-y-12 md:space-y-24 scroll-mt-32">
           {/* Hero Section */}
           <section className="relative group">
             {isAdmin && (
@@ -290,12 +313,11 @@ export default function App() {
                   <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 md:gap-16 items-center">
                     <div className="space-y-8 md:space-y-12">
                       <div className="space-y-6 md:space-y-8">
-                        <h1 className="text-5xl sm:text-7xl md:text-9xl font-serif font-medium tracking-tighter leading-[0.8] text-zinc-900">
-                          <span className="text-indigo-600">{cvData.name.split(' ')[0]}</span> <br />
-                          <span className="italic text-indigo-200">{cvData.name.split(' ').slice(1).join(' ')}</span>
+                        <h1 className="text-4xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tight leading-tight text-zinc-900">
+                          <span className="text-zinc-900">{cvData.name}</span>
                         </h1>
-                        <div className="space-y-4">
-                          <p className="text-xl md:text-2xl text-zinc-500 font-light max-w-xl leading-relaxed">
+                        <div className="space-y-3">
+                          <p className="text-lg md:text-xl text-zinc-500 font-light max-w-xl leading-relaxed">
                             {cvData.title}
                           </p>
                           <p className="text-sm text-indigo-400 font-medium italic">
@@ -312,35 +334,41 @@ export default function App() {
                             </div>
                             <span>{cvData.email}</span>
                           </a>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-4">
                           {cvData.orcid && (
                             <a 
                               href={`https://orcid.org/${cvData.orcid}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 hover:text-indigo-600 transition-colors group"
+                              className="px-5 py-2.5 rounded-full border border-zinc-200 bg-white text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:border-[#A6CE39] hover:bg-[#A6CE39]/5 hover:text-[#A6CE39] hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-sm hover:shadow-md group"
                             >
-                              <div className="w-10 h-10 rounded-full border border-zinc-100 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                <Globe size={18} />
-                              </div>
-                              <span>ORCID: {cvData.orcid}</span>
+                              <AwardIcon size={12} className="group-hover:scale-110 transition-transform" />
+                              ORCID
                             </a>
                           )}
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-4">
                           {cvData.profiles.map((profile, idx) => (
                             <a 
                               key={idx} 
                               href={profile.url} 
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-5 py-2.5 rounded-full border border-zinc-100 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:border-indigo-600 hover:text-indigo-600 transition-all flex items-center gap-2"
+                              className="px-5 py-2.5 rounded-full border border-zinc-200 bg-white text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:border-indigo-600 hover:bg-indigo-50/50 hover:text-indigo-600 hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-sm hover:shadow-md group"
                             >
-                              <Globe size={12} />
+                              {profile.label.toLowerCase().includes('scholar') ? <GraduationCap size={12} className="group-hover:scale-110 transition-transform" /> :
+                               profile.label.toLowerCase().includes('linkedin') ? <Linkedin size={12} className="group-hover:scale-110 transition-transform" /> :
+                               profile.label.toLowerCase().includes('github') ? <Github size={12} className="group-hover:scale-110 transition-transform" /> :
+                               profile.label.toLowerCase().includes('youtube') ? <Youtube size={12} className="group-hover:scale-110 transition-transform" /> :
+                               profile.label.toLowerCase().includes('researchgate') ? <Microscope size={12} className="group-hover:scale-110 transition-transform" /> :
+                               <Globe size={12} className="group-hover:scale-110 transition-transform" />}
                               {profile.label}
                             </a>
                           ))}
-                          <button className="px-5 py-2.5 rounded-full bg-indigo-600 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-xl shadow-indigo-600/20">
+                          <button 
+                            onClick={() => cvData.cvUrl && window.open(cvData.cvUrl, '_blank')}
+                            className="px-5 py-2.5 rounded-full bg-indigo-600 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-indigo-700 hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-xl shadow-indigo-600/20"
+                          >
                             <Download size={12} />
                             Download CV (PDF)
                           </button>
@@ -348,14 +376,13 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="relative aspect-[4/5] bg-zinc-100 rounded-[3rem] overflow-hidden group shadow-2xl shadow-zinc-200">
+                    <div className="relative aspect-[4/5] bg-zinc-100 rounded-2xl overflow-hidden group shadow-xl border border-zinc-200">
                       <img 
-                        src={`https://picsum.photos/seed/${cvData.name}/800/1000`} 
+                        src={cvData.profileImage || `https://picsum.photos/seed/${cvData.name}/800/1000`} 
                         alt={cvData.name}
-                        className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100"
+                        className="w-full h-full object-cover transition-all duration-700"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/20 to-transparent" />
                     </div>
                   </div>
                 </section>
@@ -377,17 +404,15 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-8">
-                    <p className="text-2xl md:text-3xl font-serif leading-relaxed text-zinc-800 italic">
-                      <span className="text-indigo-600/20 mr-2">"</span>
+                  <div className="space-y-4">
+                    <p className="text-lg md:text-xl font-sans leading-relaxed text-zinc-700">
                       {cvData.summary}
-                      <span className="text-indigo-600/20 ml-2">"</span>
                     </p>
                   </div>
                 </section>
 
                 {/* Education Section at bottom of Home */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12 border-t border-zinc-100 pt-32">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8 border-t border-zinc-100 pt-16 md:pt-24">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('education')}
@@ -403,11 +428,11 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-16">
+                  <div className="space-y-10">
                     {cvData.education.map((edu, idx) => (
-                      <div key={idx} className="space-y-4">
+                      <div key={idx} className="space-y-3">
                         <div className="flex justify-between items-baseline">
-                          <h3 className="text-2xl font-serif font-medium text-zinc-900">{edu.degree}</h3>
+                          <h3 className="text-xl font-serif font-medium text-zinc-900">{edu.degree}</h3>
                           <span className="text-xs font-mono text-zinc-400">{edu.period}</span>
                         </div>
                         <p className="text-indigo-600/60 font-medium flex items-center gap-2">
@@ -421,7 +446,7 @@ export default function App() {
                           )}
                         </p>
                         {edu.description && (
-                          <div className="text-zinc-600 text-lg leading-relaxed italic border-l-2 border-zinc-100 pl-6 prose prose-indigo max-w-none">
+                          <div className="text-zinc-600 text-base leading-relaxed italic border-l-2 border-zinc-100 pl-4 prose prose-indigo max-w-none">
                             <Markdown>{edu.description}</Markdown>
                           </div>
                         )}
@@ -431,7 +456,7 @@ export default function App() {
                 </section>
 
                 {/* Teaching */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12 border-t border-zinc-100 pt-32">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8 border-t border-zinc-100 pt-16 md:pt-24">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('teaching')}
@@ -447,11 +472,11 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-12">
+                  <div className="space-y-8">
                     {cvData.teaching.map((item, idx) => (
-                      <div key={idx} className="p-8 rounded-[2.5rem] bg-zinc-50 border border-zinc-100 hover:bg-white hover:border-indigo-100 transition-all group">
-                        <h3 className="text-2xl font-serif font-medium text-zinc-900 mb-4 group-hover:text-indigo-600 transition-colors">{item.role}</h3>
-                        <p className="text-zinc-600 leading-relaxed text-lg">{item.details}</p>
+                      <div key={idx} className="p-6 md:p-8 rounded-[2rem] bg-zinc-50 border border-zinc-100 hover:bg-white hover:border-indigo-100 transition-all group">
+                        <h3 className="text-xl font-serif font-medium text-zinc-900 mb-3 group-hover:text-indigo-600 transition-colors">{item.role}</h3>
+                        <p className="text-zinc-600 leading-relaxed text-base">{item.details}</p>
                       </div>
                     ))}
                   </div>
@@ -459,9 +484,9 @@ export default function App() {
         </div>
 
         {/* Research Section */}
-        <div id="research" className="space-y-16 md:space-y-32 scroll-mt-40">
+        <div id="research" className="space-y-12 md:space-y-24 scroll-mt-32">
           {/* Research Interests */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('research_interests')}
@@ -477,15 +502,15 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {cvData.researchInterests.map((interest, idx) => (
-                      <div key={idx} className="p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 transition-all group flex items-start gap-6">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors flex-shrink-0">
-                          <Microscope size={20} />
+                      <div key={idx} className="p-6 rounded-[1.5rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 transition-all group flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors flex-shrink-0">
+                          <Microscope size={18} />
                         </div>
-                        <div className="space-y-2">
-                          <span className="text-lg font-serif font-medium text-zinc-900">{interest}</span>
-                          <p className="text-xs text-zinc-400 leading-relaxed">Exploring advanced methodologies in {interest.toLowerCase()}.</p>
+                        <div className="space-y-1">
+                          <span className="text-base font-serif font-medium text-zinc-900">{interest}</span>
+                          <p className="text-[10px] text-zinc-400 leading-relaxed">Exploring advanced methodologies in {interest.toLowerCase()}.</p>
                         </div>
                       </div>
                     ))}
@@ -493,7 +518,7 @@ export default function App() {
                 </section>
 
                 {/* Research Experience */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('experience')}
@@ -509,16 +534,16 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-20">
+                  <div className="space-y-12">
                     {cvData.experiences.map((exp, idx) => (
                       <div key={idx} className="group">
-                        <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-2 mb-6">
-                          <h3 className="text-2xl font-serif font-medium text-zinc-900 group-hover:translate-x-2 transition-transform duration-300">
+                        <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-1 mb-4">
+                          <h3 className="text-xl font-serif font-medium text-zinc-900 group-hover:translate-x-2 transition-transform duration-300">
                             {exp.role}
                           </h3>
                           <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest">{exp.period}</span>
                         </div>
-                        <p className="text-indigo-600/60 font-medium mb-6 flex items-center gap-2">
+                        <p className="text-indigo-600/60 font-medium mb-4 flex items-center gap-2">
                           <Microscope size={14} />
                           {exp.url ? (
                             <a href={exp.url} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-800 transition-colors underline decoration-indigo-200 underline-offset-4">
@@ -528,10 +553,10 @@ export default function App() {
                             exp.company
                           )}
                         </p>
-                        <ul className="space-y-4">
+                        <ul className="space-y-3">
                           {exp.description.map((item, i) => (
-                            <li key={i} className="flex gap-4 text-zinc-600 leading-relaxed text-lg">
-                              <span className="text-zinc-200 mt-2.5 w-1.5 h-1.5 rounded-full bg-zinc-200 flex-shrink-0" />
+                            <li key={i} className="flex gap-3 text-zinc-600 leading-relaxed text-base">
+                              <span className="text-zinc-200 mt-2 w-1.5 h-1.5 rounded-full bg-zinc-200 flex-shrink-0" />
                               <div className="prose prose-sm prose-indigo max-w-none">
                                 <Markdown>{item}</Markdown>
                               </div>
@@ -544,7 +569,7 @@ export default function App() {
                 </section>
 
                 {/* Publications */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('publications')}
@@ -560,15 +585,15 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {cvData.publications.map((pub, idx) => (
                       <div 
                         key={idx}
-                        className="p-8 rounded-3xl bg-zinc-50 border border-zinc-100 hover:bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-600/5 transition-all group"
+                        className="p-6 rounded-2xl bg-zinc-50 border border-zinc-100 hover:bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-600/5 transition-all group"
                       >
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                           <div className="flex justify-between items-start gap-4">
-                            <h3 className="text-xl font-serif font-medium leading-snug text-zinc-900">
+                            <h3 className="text-lg font-serif font-medium leading-snug text-zinc-900">
                               {pub.link ? (
                                 <a href={pub.link} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 transition-colors">
                                   "{pub.title}"
@@ -607,7 +632,7 @@ export default function App() {
                 </section>
 
                 {/* Working Papers */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('workingPapers')}
@@ -623,18 +648,18 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {cvData.workingPapers.map((paper, idx) => (
-                      <div key={idx} className="flex gap-4 items-start p-8 rounded-3xl border border-zinc-100 bg-white shadow-sm">
-                        <FileText className="text-indigo-200 mt-1" size={24} />
-                        <p className="text-xl font-serif italic text-zinc-700 leading-relaxed">{paper}</p>
+                      <div key={idx} className="flex gap-3 items-start p-6 rounded-2xl border border-zinc-100 bg-white shadow-sm">
+                        <FileText className="text-indigo-200 mt-1" size={20} />
+                        <p className="text-lg font-serif italic text-zinc-700 leading-relaxed">{paper}</p>
                       </div>
                     ))}
                   </div>
                 </section>
 
                 {/* Conference Presentations */}
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('conferences')}
@@ -650,13 +675,13 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {cvData.conferences.map((conf, idx) => (
-                      <div key={idx} className="flex gap-6 items-start p-6 rounded-2xl bg-zinc-50 border border-zinc-100">
-                        <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Presentation className="text-indigo-400" size={18} />
+                      <div key={idx} className="flex gap-4 items-start p-5 rounded-xl bg-zinc-50 border border-zinc-100">
+                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Presentation className="text-indigo-400" size={16} />
                         </div>
-                        <p className="text-zinc-600 leading-relaxed text-lg">{conf}</p>
+                        <p className="text-zinc-600 leading-relaxed text-base">{conf}</p>
                       </div>
                     ))}
                   </div>
@@ -664,8 +689,8 @@ export default function App() {
         </div>
 
         {/* Leadership Section */}
-        <div id="leadership" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+        <div id="leadership" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('leadership')}
@@ -681,21 +706,21 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-12">
+                  <div className="space-y-8">
                     {cvData.leadership.map((lead, idx) => (
-                      <div key={idx} className="p-8 rounded-[2.5rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row gap-8 items-start">
+                      <div key={idx} className="p-6 rounded-[2rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row gap-6 items-start">
                         {lead.logo && (
-                          <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border border-zinc-100">
+                          <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border border-zinc-100">
                             <img src={lead.logo} alt={lead.organization} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           </div>
                         )}
-                        <div className="flex-1 space-y-4">
-                          <div className="flex justify-between items-baseline flex-wrap gap-4">
-                            <h3 className="text-2xl font-serif font-medium text-indigo-600">{lead.organization}</h3>
+                        <div className="flex-1 space-y-3">
+                          <div className="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 className="text-xl font-serif font-medium text-indigo-600">{lead.organization}</h3>
                             <span className="text-xs font-mono text-zinc-400">{lead.period}</span>
                           </div>
-                          <p className="text-zinc-500 italic flex items-center gap-2 text-lg">
-                            <Users size={18} className="text-indigo-200" />
+                          <p className="text-zinc-500 italic flex items-center gap-2 text-base">
+                            <Users size={16} className="text-indigo-200" />
                             {lead.role}
                           </p>
                           {lead.description && (
@@ -707,7 +732,7 @@ export default function App() {
                   </div>
                 </section>
 
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('eventCoordination')}
@@ -723,25 +748,25 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {cvData.eventCoordination.map((item, idx) => (
-                      <div key={idx} className="flex gap-6 items-start p-6 rounded-2xl bg-zinc-50 border border-zinc-100 group hover:border-indigo-600 transition-colors">
-                        <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                          <Rocket size={18} className="text-indigo-400 group-hover:text-white" />
+                      <div key={idx} className="flex gap-4 items-start p-5 rounded-xl bg-zinc-50 border border-zinc-100 group hover:border-indigo-600 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                          <Rocket size={16} className="text-indigo-400 group-hover:text-white" />
                         </div>
                         <div className="space-y-1">
                           <div className="flex justify-between items-baseline gap-4">
-                            <p className="font-serif text-lg text-zinc-800">{item.event}</p>
+                            <p className="font-serif text-base text-zinc-800">{item.event}</p>
                             <span className="text-xs font-mono text-zinc-400">{item.year}</span>
                           </div>
-                          <p className="text-xs text-indigo-400 uppercase tracking-widest font-bold">{item.role}</p>
+                          <p className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">{item.role}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </section>
 
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('volunteering')}
@@ -757,11 +782,11 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="grid md:grid-cols-2 gap-8">
+                  <div className="grid md:grid-cols-2 gap-4">
                     {cvData.volunteering.map((item, idx) => (
-                      <div key={idx} className="p-8 rounded-3xl bg-zinc-50 border border-zinc-100 flex gap-4 items-start">
-                        <Heart size={20} className="text-indigo-300 mt-1 flex-shrink-0" />
-                        <p className="text-zinc-600 leading-relaxed">{item}</p>
+                      <div key={idx} className="p-6 rounded-2xl bg-zinc-50 border border-zinc-100 flex gap-3 items-start">
+                        <Heart size={18} className="text-indigo-300 mt-1 flex-shrink-0" />
+                        <p className="text-zinc-600 leading-relaxed text-sm">{item}</p>
                       </div>
                     ))}
                   </div>
@@ -769,8 +794,8 @@ export default function App() {
         </div>
 
         {/* Awards Section */}
-        <div id="awards" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+        <div id="awards" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('awards')}
@@ -786,17 +811,17 @@ export default function App() {
                   </h2>
                   <div className="w-12 h-px bg-zinc-200" />
                 </div>
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid md:grid-cols-2 gap-6">
                   {cvData.awards.map((award, idx) => (
-                    <div key={idx} className="p-8 rounded-[2.5rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl transition-all group">
-                      <div className="text-xs font-mono text-amber-500/60 mb-4 tracking-widest">{award.year}</div>
-                      <h3 className="text-xl font-serif font-medium text-zinc-900 mb-4 flex items-center gap-3 group-hover:text-indigo-600 transition-colors">
-                        <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                          <AwardIcon size={18} />
+                    <div key={idx} className="p-6 rounded-[2rem] bg-white border border-zinc-100 shadow-sm hover:shadow-xl transition-all group">
+                      <div className="text-xs font-mono text-amber-500/60 mb-3 tracking-widest">{award.year}</div>
+                      <h3 className="text-lg font-serif font-medium text-zinc-900 mb-3 flex items-center gap-3 group-hover:text-indigo-600 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                          <AwardIcon size={16} />
                         </div>
                         {award.title}
                       </h3>
-                      <p className="text-zinc-500 leading-relaxed text-sm">{award.details}</p>
+                      <p className="text-zinc-500 leading-relaxed text-xs">{award.details}</p>
                     </div>
                   ))}
                 </div>
@@ -804,8 +829,8 @@ export default function App() {
         </div>
 
         {/* Skills Section */}
-        <div id="skills" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+        <div id="skills" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('skills')}
@@ -821,33 +846,33 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="p-10 rounded-[3rem] bg-indigo-600 text-white space-y-8 shadow-xl shadow-indigo-600/20">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
-                          <Microscope size={24} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-8 rounded-[2rem] bg-indigo-600 text-white space-y-6 shadow-xl shadow-indigo-600/20">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                          <Microscope size={20} />
                         </div>
                         <h3 className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Technical Skills</h3>
                       </div>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {cvData.skills.instrumental.map((skill, i) => (
-                          <span key={i} className="px-4 py-2 rounded-xl bg-white/10 text-xs font-medium hover:bg-white hover:text-indigo-600 transition-all">
+                          <span key={i} className="px-3 py-1.5 rounded-lg bg-white/10 text-[10px] font-medium hover:bg-white hover:text-indigo-600 transition-all">
                             {skill}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    <div className="p-10 rounded-[3rem] bg-indigo-50/30 border border-indigo-100 shadow-sm space-y-8">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                          <Code2 size={24} />
+                    <div className="p-8 rounded-[2rem] bg-indigo-50/30 border border-indigo-100 shadow-sm space-y-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                          <Code2 size={20} />
                         </div>
                         <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600/60">Computational Skills</h3>
                       </div>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {[...cvData.skills.software, ...cvData.skills.statistical].map((skill, i) => (
-                          <span key={i} className="px-4 py-2 rounded-xl bg-white text-xs font-medium text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all">
+                          <span key={i} className="px-3 py-1.5 rounded-lg bg-white text-[10px] font-medium text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all">
                             {skill}
                           </span>
                         ))}
@@ -856,7 +881,7 @@ export default function App() {
                   </div>
                 </section>
 
-                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+                <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
                   {isAdmin && (
                     <button 
                       onClick={() => setEditingSection('workshops')}
@@ -872,12 +897,12 @@ export default function App() {
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-2 gap-4">
                     {cvData.workshops.map((ws, idx) => (
-                      <div key={idx} className="p-8 rounded-3xl border border-zinc-100 bg-white space-y-4 group hover:border-indigo-600 transition-colors">
+                      <div key={idx} className="p-6 rounded-2xl border border-zinc-100 bg-white space-y-3 group hover:border-indigo-600 transition-colors">
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
-                            <p className="font-serif text-lg text-zinc-800">{ws.title}</p>
+                            <p className="font-serif text-base text-zinc-800">{ws.title}</p>
                             <p className="text-[10px] text-indigo-400 uppercase tracking-widest font-bold">{ws.provider}</p>
                           </div>
                           <span className="text-xs font-mono text-zinc-300 group-hover:text-indigo-600 transition-colors">{ws.year}</span>
@@ -898,8 +923,8 @@ export default function App() {
         </div>
 
         {/* Blog Section */}
-        <div id="blog" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12">
+        <div id="blog" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('blog')}
@@ -916,25 +941,25 @@ export default function App() {
                   <div className="w-12 h-px bg-zinc-200" />
                   <p className="text-sm text-zinc-400 leading-relaxed">Reflections on research, PhD applications, and the future of nanotechnology.</p>
                 </div>
-                <div className="space-y-12">
+                <div className="space-y-8">
                   {cvData.blogPosts.map((post, idx) => (
-                    <div key={idx} className="group cursor-pointer grid md:grid-cols-[250px_1fr] gap-8 items-start">
+                    <div key={idx} className="group cursor-pointer grid md:grid-cols-[200px_1fr] gap-6 items-start">
                       {post.imageUrl && (
-                        <div className="aspect-video rounded-2xl overflow-hidden border border-zinc-100 flex-shrink-0">
+                        <div className="aspect-video rounded-xl overflow-hidden border border-zinc-100 flex-shrink-0">
                           <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
                         </div>
                       )}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
                           <span className="px-3 py-1 rounded-full bg-indigo-50 text-[10px] font-bold uppercase tracking-widest text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                             {post.category}
                           </span>
                           <span className="text-[10px] font-mono text-indigo-300 uppercase tracking-widest">{post.date}</span>
                         </div>
-                        <h3 className="text-3xl font-serif font-medium text-zinc-900 group-hover:text-indigo-600 transition-colors leading-tight">
+                        <h3 className="text-2xl font-serif font-medium text-zinc-900 group-hover:text-indigo-600 transition-colors leading-tight">
                           {post.title}
                         </h3>
-                        <p className="text-zinc-500 leading-relaxed text-lg max-w-2xl">
+                        <p className="text-zinc-500 leading-relaxed text-base max-w-2xl">
                           {post.excerpt}
                         </p>
                         <div className="flex items-center gap-6">
@@ -989,8 +1014,8 @@ export default function App() {
         </div>
 
         {/* Gallery Section */}
-        <div id="gallery" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group space-y-12">
+        <div id="gallery" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group space-y-8">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('gallery')}
@@ -1000,12 +1025,12 @@ export default function App() {
               </button>
             )}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-600 flex items-center gap-2">
                       <Globe size={14} />
                       Photo Gallery
                     </h2>
-                    <h3 className="text-4xl font-serif italic text-zinc-900">Captured Moments</h3>
+                    <h3 className="text-2xl font-sans font-bold text-zinc-900">Captured Moments</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {['All', 'Campus Sunrise', 'Nature', 'Conference', 'Lab', 'Cycling'].map((cat) => (
@@ -1025,7 +1050,7 @@ export default function App() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {cvData.gallery
                     .filter(item => galleryFilter === 'All' || item.category === galleryFilter)
                     .map((item, idx) => (
@@ -1033,7 +1058,7 @@ export default function App() {
                         key={idx}
                         onClick={() => setSelectedImage(item)}
                         className={cn(
-                          "group relative rounded-[2rem] overflow-hidden cursor-pointer shadow-xl shadow-zinc-200/50",
+                          "group relative rounded-[1.5rem] overflow-hidden cursor-pointer shadow-xl shadow-zinc-200/50",
                           idx % 3 === 0 ? "md:col-span-2 aspect-[16/9]" : "aspect-square"
                         )}
                       >
@@ -1056,8 +1081,8 @@ export default function App() {
         </div>
 
         {/* YouTube Section */}
-        <div id="youtube" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-12 md:gap-24">
+        <div id="youtube" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="relative group grid lg:grid-cols-[1fr_2fr] gap-8 md:gap-16">
             {isAdmin && (
               <button 
                 onClick={() => setEditingSection('youtube')}
@@ -1075,25 +1100,25 @@ export default function App() {
                 <div className="w-12 h-px bg-zinc-200" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-4xl font-serif italic text-zinc-900 leading-tight">Science & Research Insights</h3>
-                <p className="text-zinc-500 leading-relaxed text-lg">
+                <h3 className="text-2xl font-sans font-bold text-zinc-900 leading-tight">Science & Research Insights</h3>
+                <p className="text-zinc-500 leading-relaxed text-base">
                   Join me on my YouTube channel where I share insights into nanotechnology, PhD life, and research methodologies.
                 </p>
                 <a 
                   href="https://www.youtube.com/@mahmudshareef9386" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded-full font-bold uppercase tracking-widest text-[10px] hover:bg-red-700 transition-all shadow-xl shadow-red-600/20"
+                  className="inline-flex items-center gap-3 px-6 py-3 bg-red-600 text-white rounded-full font-bold uppercase tracking-widest text-[10px] hover:bg-red-700 transition-all shadow-xl shadow-red-600/20"
                 >
-                  <Youtube size={18} />
+                  <Youtube size={16} />
                   Subscribe to Channel
                 </a>
               </div>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               {cvData.youtubeVideos.map((video, idx) => (
-                <div key={idx} className="group relative rounded-[2.5rem] overflow-hidden bg-white border border-zinc-100 shadow-sm hover:shadow-2xl transition-all">
+                <div key={idx} className="group relative rounded-[2rem] overflow-hidden bg-white border border-zinc-100 shadow-sm hover:shadow-2xl transition-all">
                   <div className="aspect-video relative overflow-hidden">
                     <img 
                       src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`} 
@@ -1102,13 +1127,13 @@ export default function App() {
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center text-red-600 shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-500">
-                        <Youtube size={32} fill="currentColor" />
+                      <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-red-600 shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-500">
+                        <Youtube size={24} fill="currentColor" />
                       </div>
                     </div>
                   </div>
-                  <div className="p-8 space-y-4">
-                    <h4 className="text-xl font-serif font-medium text-zinc-900 leading-tight group-hover:text-red-600 transition-colors">
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-lg font-serif font-medium text-zinc-900 leading-tight group-hover:text-red-600 transition-colors">
                       {video.title}
                     </h4>
                     <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
@@ -1132,31 +1157,38 @@ export default function App() {
         </div>
 
         {/* Contact Section */}
-        <div id="contact" className="space-y-16 md:space-y-32 scroll-mt-40">
-          <section className="grid lg:grid-cols-[1fr_2fr] gap-12 md:gap-24">
-                <div className="space-y-12">
-                  <div className="space-y-6">
+        <div id="contact" className="space-y-12 md:space-y-24 scroll-mt-32">
+          <section className="grid lg:grid-cols-[1fr_2fr] gap-8 md:gap-16">
+                <div className="space-y-8">
+                  <div className="space-y-4">
                     <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-600 flex items-center gap-2">
                       <Mail size={14} />
                       Contact Information
                     </h2>
                     <div className="w-12 h-px bg-zinc-200" />
                   </div>
-                  <div className="space-y-8">
-                    <div className="space-y-2">
+                  <div className="space-y-6">
+                    <div className="space-y-1">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Professional Email</p>
-                      <a href={`mailto:${cvData.email}`} className="text-xl font-serif text-zinc-900 hover:text-indigo-600 transition-colors">{cvData.email}</a>
+                      <a href={`mailto:${cvData.email}`} className="text-lg font-serif text-zinc-900 hover:text-indigo-600 transition-colors">{cvData.email}</a>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Location</p>
-                      <p className="text-xl font-serif text-zinc-900">{cvData.location}</p>
+                      <p className="text-lg font-serif text-zinc-900">{cvData.location}</p>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
+                      {cvData.orcid && (
+                        <a href={`https://orcid.org/${cvData.orcid}`} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-[#A6CE39] hover:text-white transition-all hover:-translate-y-1 shadow-sm">
+                          <AwardIcon size={20} />
+                        </a>
+                      )}
                       {cvData.profiles.map((p, i) => (
-                        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all">
-                          {p.label === 'LinkedIn' ? <Linkedin size={20} /> : 
-                           p.label === 'GitHub' ? <Github size={20} /> :
-                           p.label === 'YouTube' ? <Youtube size={20} /> :
+                        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all hover:-translate-y-1 shadow-sm">
+                          {p.label.toLowerCase().includes('linkedin') ? <Linkedin size={20} /> : 
+                           p.label.toLowerCase().includes('github') ? <Github size={20} /> :
+                           p.label.toLowerCase().includes('youtube') ? <Youtube size={20} /> :
+                           p.label.toLowerCase().includes('scholar') ? <GraduationCap size={20} /> :
+                           p.label.toLowerCase().includes('researchgate') ? <Microscope size={20} /> :
                            <Globe size={20} />}
                         </a>
                       ))}
@@ -1164,23 +1196,23 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="bg-zinc-50 p-12 rounded-[3rem] border border-zinc-100">
-                  <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                    <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-zinc-50 p-8 md:p-12 rounded-[2rem] border border-zinc-100">
+                  <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Full Name</label>
-                        <input type="text" className="w-full px-6 py-4 rounded-2xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all" placeholder="John Doe" />
+                        <input type="text" className="w-full px-5 py-3 rounded-xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all" placeholder="John Doe" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Email Address</label>
-                        <input type="email" className="w-full px-6 py-4 rounded-2xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all" placeholder="john@example.com" />
+                        <input type="email" className="w-full px-5 py-3 rounded-xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all" placeholder="john@example.com" />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Message</label>
-                      <textarea className="w-full px-6 py-4 rounded-2xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all h-40 resize-none" placeholder="How can we collaborate?" />
+                      <textarea className="w-full px-5 py-3 rounded-xl bg-white border border-zinc-100 focus:border-indigo-600 outline-none transition-all h-32 resize-none" placeholder="How can we collaborate?" />
                     </div>
-                    <button className="w-full py-5 rounded-full bg-indigo-600 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
+                    <button className="w-full py-4 rounded-full bg-indigo-600 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
                       Send Message
                     </button>
                   </form>
@@ -1189,16 +1221,21 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer className="pt-32 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="space-y-4 text-center md:text-left">
-            <div className="text-2xl font-serif italic text-zinc-900">{cvData.name}</div>
+        <footer className="pt-16 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="text-xl font-serif italic text-zinc-900">{cvData.name}</div>
             <div className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">
               © {new Date().getFullYear()} • PhD Portfolio
             </div>
           </div>
-          <div className="flex gap-10">
+          <div className="flex flex-wrap gap-6 md:gap-8">
+            {cvData.orcid && (
+              <a href={`https://orcid.org/${cvData.orcid}`} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#A6CE39] transition-all hover:-translate-y-1 text-xs font-bold uppercase tracking-widest">
+                ORCID
+              </a>
+            )}
             {cvData.profiles.map((p, i) => (
-              <a key={i} href={p.url} className="text-zinc-400 hover:text-indigo-600 transition-all hover:-translate-y-1 text-xs font-bold uppercase tracking-widest">
+              <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-indigo-600 transition-all hover:-translate-y-1 text-xs font-bold uppercase tracking-widest">
                 {p.label}
               </a>
             ))}
@@ -1514,6 +1551,38 @@ export default function App() {
                           onChange={(e) => setCvData({...cvData, summary: e.target.value})}
                           className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none transition-all h-40 resize-none" 
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Profile Image URL</label>
+                        <div className="flex gap-4">
+                          <input 
+                            type="text" 
+                            value={cvData.profileImage || ''}
+                            onChange={(e) => setCvData({...cvData, profileImage: e.target.value})}
+                            placeholder="https://example.com/image.jpg"
+                            className="flex-1 px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                          />
+                          <label className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl cursor-pointer hover:bg-indigo-100 transition-all">
+                            <ImageIcon size={20} />
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCvData({...cvData, profileImage: url}))} />
+                          </label>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">CV File URL</label>
+                        <div className="flex gap-4">
+                          <input 
+                            type="text" 
+                            value={cvData.cvUrl || ''}
+                            onChange={(e) => setCvData({...cvData, cvUrl: e.target.value})}
+                            placeholder="/uploads/cv.pdf"
+                            className="flex-1 px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                          />
+                          <label className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl cursor-pointer hover:bg-indigo-100 transition-all">
+                            <FileText size={20} />
+                            <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, (url) => setCvData({...cvData, cvUrl: url}))} />
+                          </label>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1943,6 +2012,35 @@ export default function App() {
                               className="w-full px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none h-24" 
                             />
                           </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Logo URL</label>
+                            <div className="flex gap-4">
+                              <input 
+                                type="text" 
+                                value={lead.logo || ''}
+                                onChange={(e) => {
+                                  const newLead = [...cvData.leadership];
+                                  newLead[idx] = {...newLead[idx], logo: e.target.value};
+                                  setCvData({...cvData, leadership: newLead});
+                                }}
+                                placeholder="https://example.com/logo.png"
+                                className="flex-1 px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
+                              />
+                              <label className="p-3 bg-indigo-50 text-indigo-600 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all">
+                                <ImageIcon size={18} />
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/*" 
+                                  onChange={(e) => handleFileUpload(e, (url) => {
+                                    const newLead = [...cvData.leadership];
+                                    newLead[idx] = {...newLead[idx], logo: url};
+                                    setCvData({...cvData, leadership: newLead});
+                                  })} 
+                                />
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       ))}
                       <button 
@@ -2134,6 +2232,35 @@ export default function App() {
                               }}
                               className="w-full px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none h-40" 
                             />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Image URL</label>
+                            <div className="flex gap-4">
+                              <input 
+                                type="text" 
+                                value={post.imageUrl || ''}
+                                onChange={(e) => {
+                                  const newPosts = [...cvData.blogPosts];
+                                  newPosts[idx] = {...newPosts[idx], imageUrl: e.target.value};
+                                  setCvData({...cvData, blogPosts: newPosts});
+                                }}
+                                placeholder="https://example.com/blog-image.jpg"
+                                className="flex-1 px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
+                              />
+                              <label className="p-3 bg-indigo-50 text-indigo-600 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all">
+                                <ImageIcon size={18} />
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/*" 
+                                  onChange={(e) => handleFileUpload(e, (url) => {
+                                    const newPosts = [...cvData.blogPosts];
+                                    newPosts[idx] = {...newPosts[idx], imageUrl: url};
+                                    setCvData({...cvData, blogPosts: newPosts});
+                                  })} 
+                                />
+                              </label>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -2479,16 +2606,31 @@ export default function App() {
                           </div>
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Certificate URL (Optional)</label>
-                            <input 
-                              type="text" 
-                              value={ws.certificateUrl || ''}
-                              onChange={(e) => {
-                                const newWorkshops = [...cvData.workshops];
-                                newWorkshops[idx] = {...newWorkshops[idx], certificateUrl: e.target.value};
-                                setCvData({...cvData, workshops: newWorkshops});
-                              }}
-                              className="w-full px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
-                            />
+                            <div className="flex gap-4">
+                              <input 
+                                type="text" 
+                                value={ws.certificateUrl || ''}
+                                onChange={(e) => {
+                                  const newWorkshops = [...cvData.workshops];
+                                  newWorkshops[idx] = {...newWorkshops[idx], certificateUrl: e.target.value};
+                                  setCvData({...cvData, workshops: newWorkshops});
+                                }}
+                                className="flex-1 px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
+                              />
+                              <label className="p-3 bg-indigo-50 text-indigo-600 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all">
+                                <FileText size={18} />
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/*,.pdf" 
+                                  onChange={(e) => handleFileUpload(e, (url) => {
+                                    const newWorkshops = [...cvData.workshops];
+                                    newWorkshops[idx] = {...newWorkshops[idx], certificateUrl: url};
+                                    setCvData({...cvData, workshops: newWorkshops});
+                                  })} 
+                                />
+                              </label>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -2515,16 +2657,31 @@ export default function App() {
                           </button>
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 ml-4">Image URL</label>
-                            <input 
-                              type="text" 
-                              value={item.url}
-                              onChange={(e) => {
-                                const newGallery = [...cvData.gallery];
-                                newGallery[idx] = {...newGallery[idx], url: e.target.value};
-                                setCvData({...cvData, gallery: newGallery});
-                              }}
-                              className="w-full px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
-                            />
+                            <div className="flex gap-4">
+                              <input 
+                                type="text" 
+                                value={item.url}
+                                onChange={(e) => {
+                                  const newGallery = [...cvData.gallery];
+                                  newGallery[idx] = {...newGallery[idx], url: e.target.value};
+                                  setCvData({...cvData, gallery: newGallery});
+                                }}
+                                className="flex-1 px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-100 focus:border-indigo-600 outline-none" 
+                              />
+                              <label className="p-3 bg-indigo-50 text-indigo-600 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all">
+                                <ImageIcon size={18} />
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/*" 
+                                  onChange={(e) => handleFileUpload(e, (url) => {
+                                    const newGallery = [...cvData.gallery];
+                                    newGallery[idx] = {...newGallery[idx], url: url};
+                                    setCvData({...cvData, gallery: newGallery});
+                                  })} 
+                                />
+                              </label>
+                            </div>
                           </div>
                           <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">

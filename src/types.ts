@@ -119,6 +119,8 @@ export interface CVData {
   gallery: { url: string; caption: string; category: string }[];
   blogPosts: BlogPost[];
   youtubeVideos: YouTubeVideo[];
+  profileImage?: string;
+  cvUrl?: string;
 }
 
 export const initialCVData: CVData = {
@@ -375,5 +377,7 @@ export const initialCVData: CVData = {
   youtubeVideos: [
     { "title": "Nanotechnology: The Future of Science", "id": "dQw4w9WgXcQ", "views": "1.2K", "date": "2 months ago" },
     { "title": "My PhD Journey & Application Tips", "id": "dQw4w9WgXcQ", "views": "850", "date": "3 months ago" }
-  ]
+  ],
+  profileImage: "https://picsum.photos/seed/mahmud/800/1000",
+  cvUrl: ""
 };

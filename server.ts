@@ -1,19 +1,41 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import fs from "fs/promises";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DATA_FILE = path.join(__dirname, "data.json");
+const UPLOADS_DIR = path.join(__dirname, "uploads");
+
+// Ensure uploads directory exists
+if (!existsSync(UPLOADS_DIR)) {
+  mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOADS_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
+  app.use("/uploads", express.static(UPLOADS_DIR));
 
   // API Routes
   app.get("/api/cv", async (req, res) => {
@@ -33,6 +55,14 @@ async function startServer() {
     } catch (error) {
       res.status(500).json({ error: "Failed to save data" });
     }
+  });
+
+  app.post("/api/upload", upload.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ url: fileUrl });
   });
 
   app.post("/api/login", (req, res) => {
