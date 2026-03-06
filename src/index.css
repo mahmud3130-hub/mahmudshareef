@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
+@import "react-quill-new/dist/quill.snow.css";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -17,6 +18,22 @@
   body {
     @apply bg-zinc-50 text-zinc-900 antialiased;
   }
+  
+  /* Responsive Typography Adjustments */
+  html {
+    @apply text-[12px] sm:text-[13px] md:text-[16px];
+  }
+}
+
+/* Quill Editor Customization */
+.ql-container {
+  @apply !font-sans !text-base;
+}
+.ql-editor {
+  @apply !min-h-[150px] !bg-zinc-50 !rounded-b-2xl !border-x !border-b !border-zinc-100 focus:!border-indigo-600 !transition-all;
+}
+.ql-toolbar {
+  @apply !bg-zinc-50 !rounded-t-2xl !border-zinc-100;
 }
 
 .glass {

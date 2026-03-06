@@ -82,6 +82,7 @@ export interface Supervisor {
 
 export interface YouTubeVideo {
   title: string;
+  url: string;
   id: string;
   views: string;
   date: string;
@@ -375,8 +376,8 @@ export const initialCVData: CVData = {
     }
   ],
   youtubeVideos: [
-    { "title": "Nanotechnology: The Future of Science", "id": "dQw4w9WgXcQ", "views": "1.2K", "date": "2 months ago" },
-    { "title": "My PhD Journey & Application Tips", "id": "dQw4w9WgXcQ", "views": "850", "date": "3 months ago" }
+    { "title": "Nanotechnology: The Future of Science", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "id": "dQw4w9WgXcQ", "views": "1.2K", "date": "2 months ago" },
+    { "title": "My PhD Journey & Application Tips", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "id": "dQw4w9WgXcQ", "views": "850", "date": "3 months ago" }
   ],
   profileImage: "https://picsum.photos/seed/mahmud/800/1000",
   cvUrl: ""

@@ -5,6 +5,9 @@ import { existsSync, mkdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,6 +75,27 @@ async function startServer() {
       res.json({ success: true, token: "fake-jwt-token" });
     } else {
       res.status(401).json({ error: "Invalid username or password" });
+    }
+  });
+
+  app.get("/api/youtube/sync", async (req, res) => {
+    const { videoId } = req.query;
+    const apiKey = process.env.YOUTUBE_API_KEY;
+
+    if (!videoId) {
+      return res.status(400).json({ error: "Missing videoId" });
+    }
+
+    if (!apiKey) {
+      return res.status(500).json({ error: "YouTube API key not configured" });
+    }
+
+    try {
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet,statistics`);
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch YouTube data" });
     }
   });
 
